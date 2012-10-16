@@ -86,8 +86,8 @@
           type = "string";
         }
       }
-      // Don't attempt to sort if no data type
-      if(!type){return false;}
+      // If no type is specified, default to a string
+      if (!type) type = "string";
 
       var sortMethod = sortFns[type];
 
