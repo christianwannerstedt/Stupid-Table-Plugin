@@ -3,20 +3,22 @@
 // Call on a table 
 // sortFns: Sort functions for your datatypes.
 (function($){
-  $.fn.stupidtable = function(sortFns){
-    var table = this; sortFns = sortFns || {};
 
-    // ==================================================== //
-    //                  Utility functions                   //
-    // ==================================================== //
+  $.fn.stupidtable = function(sortFns){
 
     // Merge sort functions with some default sort functions.
+    var sortFns = sortFns || {};
     sortFns = $.extend({}, {
       "int":function(a,b){ return parseInt(a, 10) - parseInt(b,10); },
       "float":function(a,b){ return parseFloat(a) - parseFloat(b); },
       "string":function(a,b){ if (a<b) return -1; if (a>b) return +1; return 0;}
     }, sortFns);
 
+
+    // ==================================================== //
+    //                  Utility functions                   //
+    // ==================================================== //
+    
     // Array comparison. See http://stackoverflow.com/a/8618383
     var arrays_equal = function(a,b) { return !!a && !!b && !(a<b || b<a);}
     
@@ -61,66 +63,76 @@
       return arrays_equal(clone, sorted) || arrays_equal(reversed, sorted);
     }
 
+   
+
     // ==================================================== //
     //                  Begin execution!                    //
     // ==================================================== //
-    // Do sorting when THs are clicked
-    table.delegate("th", "click", function(){
-      var trs = table.find("tbody tr");
-      var i = $(this).index();
-      var classes = $(this).attr("class");
-      var type = null;
-      if (classes){
-        classes = classes.split(/\s+/);
+    this.each(function(){
 
-        for(var j=0; j<classes.length; j++){
-          if(classes[j].search("type-") != -1){
-            type = classes[j];
-            break;
+      var table = $(this);
+      // Do sorting when THs are clicked
+      table.delegate("th", "click", function(){
+        var trs = table.find("tbody tr");
+        var i = $(this).index();
+        var classes = $(this).attr("class");
+        var type = null;
+        if (classes){
+          classes = classes.split(/\s+/);
+
+          for(var j=0; j<classes.length; j++){
+            if(classes[j].search("type-") != -1){
+              type = classes[j];
+              break;
+            }
+          }
+          if(type){
+            type = type.split('-')[1];
+          }
+          else{
+            type = "string";
           }
         }
-        if(type){
-          type = type.split('-')[1];
+        
+        // If no type is specified, default to a string
+        if (!type) type = "string";
+
+        var sortMethod = sortFns[type];
+
+        // Gather the elements for this column
+        column = [];
+
+        // Push either the value of the 'data-order-by' attribute if specified
+        // or just the text() value in this column to column[] for comparison.
+        trs.each(function(index,tr){
+          var e = $(tr).children().eq(i);
+          var order_by = e.attr('data-order-by') || e.text();
+          column.push(order_by);
+        });
+
+        // If the column is already sorted, just reverse the order. The sort
+        // map is just reversing the indexes.
+        if(is_sorted_array(column, sortMethod)){
+          column.reverse();
+          var theMap = [];
+          for(var i=column.length-1; i>=0; i--){
+            theMap.push(i);
+          }
         }
         else{
-          type = "string";
+          // Get a sort map and apply to all rows
+          theMap = sort_map(column, sortMethod);
         }
-      }
-      // If no type is specified, default to a string
-      if (!type) type = "string";
 
-      var sortMethod = sortFns[type];
+        var sortedTRs = $(apply_sort_map(trs, theMap));
 
-      // Gather the elements for this column
-      column = [];
-
-      // Push either the value of the 'data-order-by' attribute if specified
-      // or just the text() value in this column to column[] for comparison.
-      trs.each(function(index,tr){
-        var e = $(tr).children().eq(i);
-        var order_by = e.attr('data-order-by') || e.text();
-	      column.push(order_by);
+        // Replace the content of tbody with the sortedTRs. Strangely (and
+        // conveniently!) enough, .append accomplishes this for us.
+        table.find("tbody").append(sortedTRs);
       });
 
-      // If the column is already sorted, just reverse the order. The sort
-      // map is just reversing the indexes.
-      if(is_sorted_array(column, sortMethod)){
-        column.reverse();
-        var theMap = [];
-        for(var i=column.length-1; i>=0; i--){
-          theMap.push(i);
-        }
-      }
-      else{
-        // Get a sort map and apply to all rows
-        theMap = sort_map(column, sortMethod);
-      }
-
-      var sortedTRs = $(apply_sort_map(trs, theMap));
-
-      // Replace the content of tbody with the sortedTRs. Strangely (and
-      // conveniently!) enough, .append accomplishes this for us.
-      table.find("tbody").append(sortedTRs);
     });
+    
   }
+
  })(jQuery);
