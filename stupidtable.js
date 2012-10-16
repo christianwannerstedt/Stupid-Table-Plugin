@@ -84,7 +84,7 @@
 
       var table = $(this);
       // Do sorting when THs are clicked
-      table.delegate("th", "click", function(){
+      table.find("th").css("cursor", "pointer").on("click", function(){
         var trs = table.find("tbody tr");
         var i = $(this).index();
         
