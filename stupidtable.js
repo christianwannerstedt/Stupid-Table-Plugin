@@ -9,16 +9,29 @@
     // Merge sort functions with some default sort functions.
     var sortFns = sortFns || {};
     sortFns = $.extend({}, {
-      "int":function(a,b){ return parseInt(a, 10) - parseInt(b,10); },
-      "float":function(a,b){ return parseFloat(a) - parseFloat(b); },
-      "string":function(a,b){ if (a<b) return -1; if (a>b) return +1; return 0;}
+      "int": function(a,b){ 
+        return parseInt(a, 10) - parseInt(b,10); 
+      },
+      "float": function(a,b){ 
+        return parseFloat(a) - parseFloat(b); 
+      },
+      "string": function(a,b){ 
+        if (a<b) return -1;
+        if (a>b) return 1;
+        return 0; 
+      },
+      "price": function(a,b){ 
+        a = a.replace(/\D/g, ""); 
+        b = b.replace(/\D/g, ""); 
+        return parseFloat(a) - parseFloat(b); 
+      }
     }, sortFns);
 
 
     // ==================================================== //
     //                  Utility functions                   //
     // ==================================================== //
-    
+
     // Array comparison. See http://stackoverflow.com/a/8618383
     var arrays_equal = function(a,b) { return !!a && !!b && !(a<b || b<a);}
     
