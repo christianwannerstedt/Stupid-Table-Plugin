@@ -75,7 +75,6 @@
       // Check if the array is sorted in either direction.
       return arrays_equal(clone, sorted) || arrays_equal(reversed, sorted);
     }
-
    
 
     // ==================================================== //
@@ -88,28 +87,10 @@
       table.delegate("th", "click", function(){
         var trs = table.find("tbody tr");
         var i = $(this).index();
-        var classes = $(this).attr("class");
-        var type = null;
-        if (classes){
-          classes = classes.split(/\s+/);
-
-          for(var j=0; j<classes.length; j++){
-            if(classes[j].search("type-") != -1){
-              type = classes[j];
-              break;
-            }
-          }
-          if(type){
-            type = type.split('-')[1];
-          }
-          else{
-            type = "string";
-          }
-        }
         
-        // If no type is specified, default to a string
-        if (!type) type = "string";
-
+        // Default sorting to string
+        var type = $(this).data("sorting-type") || "string";
+                
         var sortMethod = sortFns[type];
 
         // Gather the elements for this column
