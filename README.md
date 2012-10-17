@@ -20,9 +20,11 @@ The HTML:
     <table>
       <thead>
         <tr>
-          <th class="type-int">int</th>
-          <th class="type-float">float</th>
-          <th class="type-string">string</th>
+          <th data-sorting-type="int">int</th>
+          <th data-sorting-type="float">float</th>
+          <th data-sorting-type="string">string</th>
+          <th data-sorting-type="price">price</th>
+          <th>string (default sort type)</th>
         </tr>
       </thead>
       <tbody>
@@ -30,6 +32,8 @@ The HTML:
           <td>15</td>
           <td>-.18</td>
           <td>banana</td>
+          <td>100,000 EUR</td>
+          <td>apple</td>
         </tr>
         ...
         ...
@@ -37,9 +41,9 @@ The HTML:
 
 The thead and tbody tags must be used.  
 
-Add a class of "type-DATATYPE" to the th's to make them sortable by that data
-type. If you don't want that column to be sortable, just don't give it a 
-type-DATATYPE class.
+Add a data-sorting-type attribute to the th's to make them sortable by that data
+type. If you don't want that column to be sortable, just give it data-sorting-type="none"
+(or any other non existing type)
 
 Predefined data types
 ---------------------
@@ -50,6 +54,7 @@ only predefined datatypes that you can pass to the th's are
 * int
 * float
 * string
+* price
 
 These data types will be sufficient for many simple tables. However, if you need
 different data types for sorting, you can easily create your own!
